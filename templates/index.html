@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rubik's Cube State Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { margin-bottom: 10px; }
+        .controls { margin-bottom: 20px; }
+        .controls input { width: 400px; padding: 5px; font-size: 14px; }
+        .controls button { padding: 5px 10px; font-size: 14px; margin-left: 5px; cursor: pointer; }
+
+        #cube { display: flex; gap: 30px; margin-bottom: 20px; }
+        .face-container { display: flex; flex-direction: column; align-items: center; }
+        .face-container h3 { margin-bottom: 5px; }
+
+        .face { display: grid; grid-template-columns: repeat(3, 40px); grid-gap: 3px; }
+        .tile { width: 40px; height: 40px; border: 1px solid #444; text-align: center; line-height: 40px; font-size: 14px; border-radius: 4px; cursor: pointer; }
+
+        /* Colors */
+        .color-U { background: white; }
+        .color-R { background: red; }
+        .color-F { background: green; }
+        .color-D { background: yellow; }
+        .color-L { background: orange; }
+        .color-B { background: blue; }
+        .color-_ { background: #ccc; }
+
+        pre { background: #f0f0f0; padding: 15px; border-radius: 5px; max-width: 1000px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<h1>Rubik's Cube State Checker</h1>
+
+<!-- value="UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB" -->
+<div class="controls">
+    <input
+        id="stateInput"
+        type="text"
+        value="UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
+        placeholder="Enter 54-character cube state"
+    >
+    <button onclick="loadState()">Set State</button>
+    <button onclick="checkCube()">Check Cube</button>
+    <button onclick="resetCube()">Reset</button>
+    <button onclick="randomState()">Random State</button>
+</div>
+
+<div id="cube">
+    <div class="face-container">
+        <h3>U</h3>
+        <div class="face" id="U"></div>
+    </div>
+    <div class="face-container">
+        <h3>R</h3>
+        <div class="face" id="R"></div>
+    </div>
+    <div class="face-container">
+        <h3>F</h3>
+        <div class="face" id="F"></div>
+    </div>
+    <div class="face-container">
+        <h3>D</h3>
+        <div class="face" id="D"></div>
+    </div>
+    <div class="face-container">
+        <h3>L</h3>
+        <div class="face" id="L"></div>
+    </div>
+    <div class="face-container">
+        <h3>B</h3>
+        <div class="face" id="B"></div>
+    </div>
+</div>
+
+<h3>Output:</h3>
+<pre id="output"></pre>
+
+<script>
+const colorClass = {
+    "U": "color-U",
+    "R": "color-R",
+    "F": "color-F",
+    "D": "color-D",
+    "L": "color-L",
+    "B": "color-B",
+    "_": "color-_"
+};
+
+const colors = ["U", "R", "F", "D", "L", "B", "_"];  // order to cycle through
+const faceOrder = ["U", "R", "F", "D", "L", "B"];
+const tilesPerFace = 9;
+
+// Generate tiles for each face
+for (let face of faceOrder) {
+    const faceDiv = document.getElementById(face);
+    for (let i = 0; i < tilesPerFace; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.dataset.pos = i;
+        tile.dataset.face = face;
+
+        // click to cycle color
+        tile.addEventListener("click", () => {
+            let current = colors.indexOf(tile.dataset.color || "_");
+            current = (current + 1) % colors.length;
+            tile.dataset.color = colors[current];
+            tile.className = "tile " + colorClass[colors[current]];
+            updateInputFromTiles();
+        });
+
+        faceDiv.appendChild(tile);
+    }
+}
+
+// Apply cube state string to tiles
+function applyCubeState(state) {
+    if(state.length !== 54) {
+        alert("State must be 54 characters!");
+        return;
+    }
+    let index = 0;
+    for(let face of faceOrder) {
+        const tiles = document.querySelectorAll(`#${face} .tile`);
+        tiles.forEach(tile => {
+            const char = state[index];
+            tile.dataset.color = char;
+            tile.className = "tile " + (colorClass[char] || "color-_");
+            index++;
+        });
+    }
+}
+
+// Update input field based on current tile colors
+function updateInputFromTiles() {
+    let state = "";
+    for (let face of faceOrder) {
+        const tiles = document.querySelectorAll(`#${face} .tile`);
+        tiles.forEach(tile => {
+            state += tile.dataset.color || "_";
+        });
+    }
+    document.getElementById("stateInput").value = state;
+}
+
+function loadState() {
+    const state = document.getElementById("stateInput").value.trim().toUpperCase();
+    applyCubeState(state);
+}
+
+function resetCube() {
+    applyCubeState(defaultState);
+    document.getElementById("stateInput").value = defaultState;
+}
+
+function checkCube() {
+    const state = document.getElementById("stateInput").value.trim().toUpperCase();
+    if(state.length !== 54) {
+        alert("Cube state must be 54 characters!");
+        return;
+    }
+    fetch("/check_state", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({state})
+    })
+    .then(res => res.json())
+    .then(out => {
+        document.getElementById("output").textContent = JSON.stringify(out, null, 2);
+    });
+}
+
+const moves = ["U","U'","U2","R","R'","R2","F","F'","F2",
+               "D","D'","D2","L","L'","L2","B","B'","B2"];
+
+// Function to generate random valid state
+function randomState() {
+    // Use the kociemba library on server side to shuffle (or we can just generate scramble moves)
+    // For client-side simplicity, we'll ask server to generate a scramble
+    
+    fetch("/random_state")
+        .then(res => res.json())
+        .then(data => {
+            const state = data.state;
+            document.getElementById("stateInput").value = state;
+            applyCubeState(state);
+        });
+}
+
+// Initialize cube in solved state
+const defaultState = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
+applyCubeState(defaultState);
+
+</script>
+
+</body>
+</html>
