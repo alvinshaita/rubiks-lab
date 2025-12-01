@@ -32,8 +32,6 @@
 
 <h1>Rubik's Cube State Checker</h1>
 
-<!-- value="UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB" -->
-<!-- value="WWWWWWWWWOOOOOOOOOGGGGGGGGGRRRRRRRRRBBBBBBBBBYYYYYYYYY" -->
 <div class="controls">
     <input
         id="stateInput"
@@ -76,38 +74,33 @@
 
 <h3>Moves</h3>
 <div id="moves" style="margin-bottom:20px;">
-    <!-- U -->
     <button onclick="sendMove('U')">U</button>
     <button onclick="sendMove(`U'`)">U'</button>
     <button onclick="sendMove('U2')">U2</button>
 
-    <!-- R -->
     <button onclick="sendMove('R')">R</button>
     <button onclick="sendMove(`R'`)">R'</button>
     <button onclick="sendMove('R2')">R2</button>
 
-    <!-- F -->
     <button onclick="sendMove('F')">F</button>
     <button onclick="sendMove(`F'`)">F'</button>
     <button onclick="sendMove('F2')">F2</button>
 
-    <!-- D -->
     <button onclick="sendMove('D')">D</button>
     <button onclick="sendMove(`D'`)">D'</button>
     <button onclick="sendMove('D2')">D2</button>
 
-    <!-- L -->
     <button onclick="sendMove('L')">L</button>
     <button onclick="sendMove(`L'`)">L'</button>
     <button onclick="sendMove('L2')">L2</button>
 
-    <!-- B -->
     <button onclick="sendMove('B')">B</button>
     <button onclick="sendMove(`B'`)">B'</button>
     <button onclick="sendMove('B2')">B2</button>
 </div>
 
-
+<h3>Move History:</h3>
+<pre id="move-history"></pre>
 <h3>Output:</h3>
 <pre id="solution-output"></pre>
 <pre id="output"></pre>
@@ -127,6 +120,9 @@ const colorClass = {
 const colors = ["U", "R", "F", "D", "L", "B", "_"];  // order to cycle through
 const faceOrder = ["U", "R", "F", "D", "L", "B"];
 const tilesPerFace = 9;
+const defaultState = "WWWWWWWWWOOOOOOOOOGGGGGGGGGRRRRRRRRRBBBBBBBBBYYYYYYYYY";
+
+let history = []; 
 
 // Generate tiles for each face
 for (let face of faceOrder) {
@@ -144,10 +140,25 @@ for (let face of faceOrder) {
             tile.dataset.color = colors[current];
             tile.className = "tile " + colorClass[colors[current]];
             updateInputFromTiles();
+            // clear history when tiles are manually changed
+            history = []; 
+            updateMoveHistoryDisplay(); 
         });
 
         faceDiv.appendChild(tile);
     }
+}
+
+function updateMoveHistoryDisplay() {
+    // add forward slash for every 10 moves
+    let formattedHistory = "";
+    for (let i = 0; i < history.length; i++) {
+        formattedHistory += history[i] + " ";
+        if ((i + 1) % 10 === 0) {
+            formattedHistory += "/ ";
+        }
+    }
+    document.getElementById("move-history").textContent = formattedHistory.trim();
 }
 
 // Apply cube state string to tiles
@@ -183,11 +194,17 @@ function updateInputFromTiles() {
 function loadState() {
     const state = document.getElementById("stateInput").value.trim().toUpperCase();
     applyCubeState(state);
+    // clear history when a new state is loaded from the input box
+    history = []; 
+    updateMoveHistoryDisplay();
 }
 
 function resetCube() {
     applyCubeState(defaultState);
     document.getElementById("stateInput").value = defaultState;
+    // clear history on reset
+    history = []; 
+    updateMoveHistoryDisplay();
 }
 
 function checkCube() {
@@ -215,6 +232,9 @@ function randomState() {
             const state = data.state;
             document.getElementById("stateInput").value = state;
             applyCubeState(state);
+            // clear history when a random state is generated
+            history = []; 
+            updateMoveHistoryDisplay();
         });
 }
 
@@ -235,6 +255,9 @@ function sendMove(move) {
 
         const newState = data.new_state;
 
+        history.push(move); 
+        updateMoveHistoryDisplay();
+
         // update UI
         document.getElementById("stateInput").value = newState;
         applyCubeState(newState);
@@ -248,7 +271,6 @@ function sendMove(move) {
 
 
 // Initialize cube in solved state
-const defaultState = "WWWWWWWWWOOOOOOOOOGGGGGGGGGRRRRRRRRRBBBBBBBBBYYYYYYYYY";
 applyCubeState(defaultState);
 
 </script>
