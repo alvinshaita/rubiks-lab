@@ -11,12 +11,12 @@
 
         #cube { width: 40%; display: flex; gap: 5px; margin-bottom: 20px; flex-direction: column; }
         .faces { display: flex; gap: 5px; }
-        .faces.end { margin-left: 131px; }
         .face-container { display: flex; flex-direction: column; align-items: center; }
         .face-container h3 { margin-bottom: 5px; }
 
-        .face { display: grid; grid-template-columns: repeat(3, 40px); grid-gap: 3px; }
+        .tileLine { display: flex; flex-direction: row; }
         .tile { width: 40px; height: 40px; border: 1px solid #444; text-align: center; line-height: 40px; font-size: 14px; border-radius: 4px; cursor: pointer; }
+        .tile-fill { width: 40px; height: 40px; border: 1px solid transparent; }
         .views { display: flex; gap: 50px; }
 
         /* Colors */
@@ -63,6 +63,7 @@
 
     <div id="cube">
         <div class="faces end">
+            <div class="face-fill"></div>
             <div class="face-container">
                 <div class="face" id="U"></div>
             </div>
@@ -82,6 +83,7 @@
             </div>
         </div>
         <div class="faces end">
+            <div class="face-fill"></div>
             <div class="face-container">
                 <div class="face" id="D"></div>
             </div>
