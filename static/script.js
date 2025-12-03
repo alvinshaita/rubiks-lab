@@ -82,6 +82,10 @@ function updateInputFromTiles() {
             state += tile.dataset.color || "_";
         });
     }
+
+    reset3DCube();
+    initializeCubieColors(state);
+
     document.getElementById("stateInput").value = state;
 }
 

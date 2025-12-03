@@ -1,9 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-import itertools
-import kociemba
-import random
-
-from magiccube import Cube
 
 import exe
 
