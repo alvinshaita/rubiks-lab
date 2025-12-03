@@ -30,10 +30,10 @@
 
         pre { background: #f0f0f0; padding: 15px; border-radius: 5px; max-width: 1000px; overflow-x: auto; }
 
-        /*#cube3d { width: 400px; height: 400px; border: 1px solid #ccc; margin-bottom: 20px; }*/
         #cube3d { width: 100%; height: 100%; border: 1px solid #ccc; margin-bottom: 20px; }
-        .move-buttons { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
-        .move-buttons button { padding: 5px 8px; font-size: 12px; cursor: pointer; }
+
+        #moves { display: flex; gap: 5px; flex-direction: column; max-width: fit-content;}
+        .move-buttons { margin-top: 10px; gap: 5px; width: 30px;}
     </style>
     <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script> -->
@@ -91,29 +91,35 @@
 
 <h3>Moves</h3>
 <div id="moves" style="margin-bottom:20px;">
-    <button onclick="sendMove('U')">U</button>
-    <button onclick="sendMove(`U'`)">U'</button>
-    <button onclick="sendMove('U2')">U2</button>
+    <div>
+        <button class="move-buttons" onclick="sendMove('U')">U</button>
+        <button class="move-buttons" onclick="sendMove(`U'`)">U'</button>
+        <button class="move-buttons" onclick="sendMove('U2')">U2</button>
 
-    <button onclick="sendMove('R')">R</button>
-    <button onclick="sendMove(`R'`)">R'</button>
-    <button onclick="sendMove('R2')">R2</button>
+        <button class="move-buttons" onclick="sendMove('R')">R</button>
+        <button class="move-buttons" onclick="sendMove(`R'`)">R'</button>
+        <button class="move-buttons" onclick="sendMove('R2')">R2</button>
+    </div>
 
-    <button onclick="sendMove('F')">F</button>
-    <button onclick="sendMove(`F'`)">F'</button>
-    <button onclick="sendMove('F2')">F2</button>
+    <div>
+        <button class="move-buttons" onclick="sendMove('F')">F</button>
+        <button class="move-buttons" onclick="sendMove(`F'`)">F'</button>
+        <button class="move-buttons" onclick="sendMove('F2')">F2</button>
 
-    <button onclick="sendMove('D')">D</button>
-    <button onclick="sendMove(`D'`)">D'</button>
-    <button onclick="sendMove('D2')">D2</button>
+        <button class="move-buttons" onclick="sendMove('D')">D</button>
+        <button class="move-buttons" onclick="sendMove(`D'`)">D'</button>
+        <button class="move-buttons" onclick="sendMove('D2')">D2</button>
+    </div>
 
-    <button onclick="sendMove('L')">L</button>
-    <button onclick="sendMove(`L'`)">L'</button>
-    <button onclick="sendMove('L2')">L2</button>
+    <div>
+        <button class="move-buttons" onclick="sendMove('L')">L</button>
+        <button class="move-buttons" onclick="sendMove(`L'`)">L'</button>
+        <button class="move-buttons" onclick="sendMove('L2')">L2</button>
 
-    <button onclick="sendMove('B')">B</button>
-    <button onclick="sendMove(`B'`)">B'</button>
-    <button onclick="sendMove('B2')">B2</button>
+        <button class="move-buttons" onclick="sendMove('B')">B</button>
+        <button class="move-buttons" onclick="sendMove(`B'`)">B'</button>
+        <button class="move-buttons" onclick="sendMove('B2')">B2</button>
+    </div>
 </div>
 
 <h3>Move History:</h3>
