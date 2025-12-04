@@ -1,2 +1,4 @@
 flask
 magiccube
+rubik_solver
+git+https://github.com/alvinshaita/cube.git
