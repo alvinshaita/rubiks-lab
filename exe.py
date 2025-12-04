@@ -1,8 +1,10 @@
 import itertools
-import kociemba
+import math
 import random
 
+# import kociemba
 from magiccube import Cube
+from magiccube.solver.basic.basic_solver import BasicSolver
 
 # don't use default value, kociemba doesn't care where you have set the centers
 # it knows it's centers
@@ -43,9 +45,15 @@ def get_solution(state):
     Get solution from a cube state
     """
     c = Cube(3, state)
-    k_state = c.get_kociemba_facelet_positions()
+    
+    # k_state = c.get_kociemba_facelet_positions()
+    # solution = kociemba.solve(k_state)
+    # return solution
 
-    solution = kociemba.solve(k_state)
+    solver = BasicSolver(c)
+    moves = solver.solve()
+    solution = " ".join([str(move) for move in moves])
+
     return solution
 
 
@@ -81,9 +89,15 @@ def get_valid_completions(state):
         candidate = "".join(temp)
 
         try:
+            # if it can't be solved, it's not a valid state
             c = Cube(3, candidate)
-            k_candidate = c.get_kociemba_facelet_positions()
-            kociemba.solve(k_candidate)
+            
+            # k_candidate = c.get_kociemba_facelet_positions()
+            # kociemba.solve(k_candidate)
+
+            solver = BasicSolver(c)
+            solver.solve()
+
             valid_states.append(candidate)
         except:
             continue
@@ -99,8 +113,11 @@ def get_valid_completions(state):
 
 
 def check_cube_state(state):
-    if len(state) != 54:
-        return {"status": "invalid", "reason": "State must be 54 characters"}
+    cube_size = get_cube_size(state)
+
+    if not cube_size.is_integer():
+        return {"status": "invalid", "reason": "State is not valid"}
+    cube_size = int(cube_size)
 
     if is_any_orientation_solved(state):
         return {"status": "solved", "solution": ""}
@@ -109,8 +126,15 @@ def check_cube_state(state):
     if "_" not in state:
         try:
             c = Cube(3, state)
-            k_state = c.get_kociemba_facelet_positions()
-            solution = kociemba.solve(k_state)
+            print(c)
+
+            # k_state = c.get_kociemba_facelet_positions()
+            # solution = kociemba.solve(k_state)
+
+            solver = BasicSolver(c)
+            moves = solver.solve()
+            solution = " ".join([str(move) for move in moves])
+
             return {"status": "valid", "solution": solution}
         except Exception as e:
             return {"status": "invalid", "reason": str(e)}
@@ -127,18 +151,24 @@ def random_state(number_of_random_moves=25):
         move = random.choice(MOVES)
         c.rotate(move)
 
+    print(c)
     state = c.get()
     return state
 
 
 def apply_move(state, move):
+    cube_size = get_cube_size(state)
+
+    if not cube_size.is_integer():
+        return {"status": "invalid", "reason": "State is not valid"}
+    cube_size = int(cube_size)
+
     if move not in MOVES:
         return {"status": "invalid", "reason": "Invalid move"}
 
     try:
-        c = Cube(3, state)
+        c = Cube(cube_size, state)
         c.rotate(move)
-
         new_state = c.get()
         return {"status": "ok", "new_state": new_state}
     except Exception as e:
@@ -146,8 +176,11 @@ def apply_move(state, move):
 
 
 def solve(state):
-    if len(state) != 54:
-        return {"status": "invalid", "reason": "State must be 54 characters"}
+    cube_size = get_cube_size(state)
+
+    if not cube_size.is_integer():
+        return {"status": "invalid", "reason": "State is not valid"}
+    cube_size = int(cube_size)
 
     if "_" in state:
         return {"status": "invalid", "reason": "All colors should be filled"}
@@ -169,3 +202,10 @@ def solve(state):
 
     except Exception as e:
         return {"status": "error", "reason": str(e)}
+
+
+def get_cube_size(state):
+    state_length = len(state)
+    face_length = state_length / 6
+    cube_size = math.sqrt(face_length)
+    return cube_size

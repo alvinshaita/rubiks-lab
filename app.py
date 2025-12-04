@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.errorhandler(Exception)
 def handle_controller_error(err):
     response = jsonify({"error": str(err)})
-    return response, err.status_code
+    return response, err
 
 # 6 faces in kociemba order
 FACES = ["U", "R", "F", "D", "L", "B"]

@@ -14,6 +14,7 @@ const faceOrder = ["U", "L", "F", "R", "B", "D"];
 const colors = ["W", "O", "G", "R", "B", "Y", "_"];  // order to cycle through
 
 const defaultState = generateRubiksState(N);
+document.getElementById("stateInput").value = defaultState;
 
 // Generate tiles for each face
 for (let face of faceOrder) {
@@ -86,7 +87,7 @@ function updateMoveHistoryDisplay() {
 // apply cube state string to tiles
 function applyCubeState(state) {
     if(state.length !== 6*N*N) {
-        alert(`State must be ${6*N*N} characters!`, state.length);
+        alert(`State must be ${6*N*N} characters! found ${state.length}`);
         return;
     }
     let index = 0;
