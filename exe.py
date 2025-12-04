@@ -2,24 +2,12 @@ import itertools
 import math
 import random
 
+from rubik_solver import utils
+
 # import kociemba
 from magiccube import Cube
-from magiccube.solver.basic.basic_solver import BasicSolver
 
-# don't use default value, kociemba doesn't care where you have set the centers
-# it knows it's centers
-# default_start_arrangement = "YYYYYYYYYOOOOOOOOOBBBBBBBBBRRRRRRRRRGGGGGGGGGWWWWWWWWW"
-# default_start_arrangement = "WWWWWWWWWOOOOOOOOOGGGGGGGGGRRRRRRRRRBBBBBBBBBYYYYYYYYY"
-
-class RubiksError(Exception):
-    """
-    Custom exception
-    """
-    def __init__(self, message, status_code=400):
-        super().__init__(message)
-        self.status_code = status_code
-
-
+DEFAULT_STATE = "YYYYYYYYYBBBBBBBBBRRRRRRRRRGGGGGGGGGOOOOOOOOOWWWWWWWWW"
 COMPLETE_COLORS = ["W", "G", "R", "B", "O", "Y"]
 MOVES = ["U","U'","U2","R","R'","R2","F","F'","F2","D","D'","D2","L","L'","L2","B","B'","B2"]
 
@@ -44,14 +32,7 @@ def get_solution(state):
     """
     Get solution from a cube state
     """
-    c = Cube(3, state)
-    
-    # k_state = c.get_kociemba_facelet_positions()
-    # solution = kociemba.solve(k_state)
-    # return solution
-
-    solver = BasicSolver(c)
-    moves = solver.solve()
+    moves = utils.solve(state, 'Kociemba')
     solution = " ".join([str(move) for move in moves])
 
     return solution
@@ -89,17 +70,11 @@ def get_valid_completions(state):
         candidate = "".join(temp)
 
         try:
-            # if it can't be solved, it's not a valid state
-            c = Cube(3, candidate)
-            
-            # k_candidate = c.get_kociemba_facelet_positions()
-            # kociemba.solve(k_candidate)
-
-            solver = BasicSolver(c)
-            solver.solve()
-
+            utils.solve(candidate, 'Kociemba')
+            # utils.solve(candidate, 'Beginner')
             valid_states.append(candidate)
         except:
+            # if it can't be solved, it's not a valid state
             continue
 
         if len(valid_states) >= max_results:
@@ -125,26 +100,19 @@ def check_cube_state(state):
     # FULL STATE - direct solve
     if "_" not in state:
         try:
-            c = Cube(3, state)
-            print(c)
-
-            # k_state = c.get_kociemba_facelet_positions()
-            # solution = kociemba.solve(k_state)
-
-            solver = BasicSolver(c)
-            moves = solver.solve()
+            moves = utils.solve(state, 'Kociemba')
             solution = " ".join([str(move) for move in moves])
 
             return {"status": "valid", "solution": solution}
         except Exception as e:
-            return {"status": "invalid", "reason": str(e)}
+            raise Exception(str(e))
 
     valid_completions = get_valid_completions(state)
     return valid_completions
 
 
 def random_state(number_of_random_moves=25):
-    c = Cube(3)
+    c = Cube(3, DEFAULT_STATE)
 
     # random scramble
     for _ in range(number_of_random_moves):

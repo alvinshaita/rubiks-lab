@@ -12,6 +12,7 @@ let history = [];
 const tilesPerFace = N*N;
 const faceOrder = ["U", "L", "F", "R", "B", "D"];
 const colors = ["W", "O", "G", "R", "B", "Y", "_"];  // order to cycle through
+const stateColors = ["Y", "B", "R", "G", "O", "W"]
 
 const defaultState = generateRubiksState(N);
 document.getElementById("stateInput").value = defaultState;
@@ -65,7 +66,7 @@ for (let faceDiv of faceDivs) {
 function generateRubiksState(n) {
     var result = "";
     for (let i = 0; i < 6; i++) {
-        result += colors[i].repeat(n * n);
+        result += stateColors[i].repeat(n * n);
     }
     return result;
 }
