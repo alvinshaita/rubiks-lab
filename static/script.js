@@ -165,7 +165,11 @@ function checkCube() {
 
 // random valid state
 function randomState() {
-    fetch("random_state")
+    fetch("random_state", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ size: N })
+    })
         .then(res => res.json())
         .then(data => {
             const state = data.state;
@@ -209,8 +213,7 @@ function sendMove(move) {
             "Applied move: " + move + "\n\n" +
             JSON.stringify(data, null, 2);
 
-
-        applyMove(move)
+        applyMove(move, 0, indexToMove=2)
     })
     .catch(err => alert("Error: " + err));
 }
@@ -233,7 +236,7 @@ function solve() {
         }
 
         // solved state
-        const state = data.state;
+        const state = data.solved_state;
         const solution = data.solution;
 
         // update UI

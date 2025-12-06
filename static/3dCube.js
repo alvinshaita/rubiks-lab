@@ -164,34 +164,50 @@ function initializeCubieColors(state) {
 }
 
 
-function applyMove(move){
-    rotateFace(move);
-}
-
-
-function rotateFace(move) {
+function applyMove(move, layers=0, indexToMove=0){
     let face = move[0];
     let angle = -Math.PI / 2;
-
     if (move.includes("'")) angle = Math.PI/2;
     if (move.includes("2")) angle = Math.PI;
 
     const axisData = faceAxis[face];
     if (!axisData) return;
 
-    let axis = new THREE.Vector3();
-    if (axisData.axis === 'x') axis.set(1,0,0);
-    if (axisData.axis === 'y') axis.set(0,1,0);
-    if (axisData.axis === 'z') axis.set(0,0,1);
+    let axis = new THREE.Vector3(
+        axisData.axis === 'x' ? 1 : 0,
+        axisData.axis === 'y' ? 1 : 0,
+        axisData.axis === 'z' ? 1 : 0
+    );
 
     if (face === 'L' || face === 'D' || face === 'B')
         angle *= -1;
 
-    // identify the NxN layer
-    const rotatingCubies = cubies.filter(c => 
-        c.userData.coords[axisData.axis] === axisData.coord
-    );
+    // compute which cubies to rotate
+    const rotatingCubies = cubies.filter(c => {
+        const sign = axisData.coord >= 0 ? 1 : -1;
+        return c.userData.coords[axisData.axis] === axisData.coord - indexToMove * sign
+    });
 
+    rotateFace(rotatingCubies, angle, axis);
+}
+
+
+// function getLayerCoordsForFace(face, layers = 1) {
+//     // layers counts how many planes starting from the face plane inward
+//     // e.g. layers=2 for N=5 & face='F' -> coords [HALF, HALF-1]
+//     const axisData = faceAxis[face];
+//     if (!axisData) return [];
+
+//     const sign = axisData.coord >= 0 ? 1 : -1;
+//     const coords = [];
+//     for (let i = 0; i < layers; i++) {
+//         coords.push(axisData.coord - i * sign);
+//     }
+//     return coords;
+// }
+
+
+function rotateFace(rotatingCubies, angle, axis) {
     const pivot = new THREE.Object3D();
     scene.add(pivot);
     rotatingCubies.forEach(c => pivot.attach(c));
