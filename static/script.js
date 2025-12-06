@@ -276,4 +276,5 @@ function delay(ms) {
 applyCubeState(defaultState);
 init3DCube();
 // initialize the colors based on the default state
-initializeCubieColors(defaultState);
+// initializeCubieColors(defaultState);
+initializeAllCubieColors(defaultState);
