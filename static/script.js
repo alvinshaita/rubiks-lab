@@ -239,7 +239,7 @@ function sendMove(move) {
             "Applied move: " + move + "\n\n" +
             JSON.stringify(data, null, 2);
 
-        applyMove(move, 0, indexToMove=2)
+            applyMove(move, indexToMove=0)
     })
     .catch(err => alert("Error: " + err));
 }
@@ -283,7 +283,7 @@ function solve() {
             updateMoveHistoryDisplay();
 
             await delay(300);
-            applyMove(move)
+            applyMove(move, indexToMove=0)
         }
     })
     .catch(err => alert("Error: " + err));

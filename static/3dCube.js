@@ -233,7 +233,7 @@ function initializeAllCubieColors(state) {
 }
 
 
-function applyMove(move, layers=0, indexToMove=0){
+function applyMove(move, indexToMove=0, layers=0){
     let face = move[0];
     let angle = -Math.PI / 2;
     if (move.includes("'")) angle = Math.PI/2;
