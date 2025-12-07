@@ -39,8 +39,9 @@ for (let face of faceOrder) {
                 tile.className = "tile " + colorClass[colors[current]];
                 updateInputFromTiles();
                 // clear history when tiles are manually changed
-                history = []; 
-                updateMoveHistoryDisplay(); 
+                history = [];
+                clearMoveHistoryDisplay();
+                clearMoveHistoryDisplay();
             });
 
             tileLine.appendChild(tile);
@@ -75,15 +76,17 @@ function generateRubiksState(n) {
 
 
 function updateMoveHistoryDisplay() {
-    // add forward slash for every 10 moves
-    let formattedHistory = "";
-    for (let i = 0; i < history.length; i++) {
-        formattedHistory += history[i] + " ";
-        if ((i + 1) % 10 === 0) {
-            formattedHistory += "/ ";
-        }
-    }
-    document.getElementById("move-history").textContent = formattedHistory.trim();
+    const moveHistory = document.getElementById("move-history")
+    const moveHistoryItem = document.createElement("div");
+    moveHistoryItem.classList.add("move-history-item")
+    moveHistoryItem.textContent = history.at(-1)
+    moveHistory.appendChild(moveHistoryItem)
+}
+
+
+function clearMoveHistoryDisplay() {
+    const moveHistory = document.getElementById("move-history")
+    moveHistory.innerHTML = ""
 }
 
 
@@ -133,7 +136,8 @@ function loadState() {
     initializeAllCubieColors(state);
 
     // clear history when a new state is loaded from the input box
-    resetHistory()
+    history = [];
+    clearMoveHistoryDisplay();
 }
 
 
@@ -146,7 +150,8 @@ function resetCube() {
     initializeAllCubieColors(defaultState);
 
     // clear history on reset
-    resetHistory()
+    history = [];
+    clearMoveHistoryDisplay();
 }
 
 
@@ -186,7 +191,8 @@ function randomState() {
             initializeAllCubieColors(state);
 
             // clear history when a random state is generated
-            resetHistory()
+            history = [];
+            clearMoveHistoryDisplay();
 
             const stateHistoryItem = document.createElement("div");
             stateHistoryItem.classList.add("state-history-item");
@@ -258,6 +264,11 @@ function solve() {
         const solved_state = data.solved_state;
         const solution = data.solution;
 
+        if (solution == "") {
+            console.log("already solved!")
+            return;
+        }
+
         // update UI
         document.getElementById("stateInput").value = solved_state;
         applyCubeState(solved_state);
@@ -276,13 +287,6 @@ function solve() {
         }
     })
     .catch(err => alert("Error: " + err));
-}
-
-
-// clear moves history
-function resetHistory() {
-    history = []; 
-    updateMoveHistoryDisplay(); 
 }
 
 

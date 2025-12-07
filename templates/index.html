@@ -30,10 +30,13 @@
 
         pre { background: #f0f0f0; padding: 15px; border-radius: 5px; max-width: 1000px; overflow-x: auto; text-wrap: wrap;}
 
-        #cube3d { width: 100%; height: 100%; border: 1px solid #ccc; margin-bottom: 20px; }
+        #cube3d { border: 1px solid #ccc; margin-bottom: 20px; }
 
         #moves { display: flex; gap: 5px; flex-direction: column; max-width: fit-content;}
         .move-buttons { margin-top: 10px; gap: 5px; width: 30px;}
+        #move-history { display: flex; flex-direction: row; gap: 10px;}
+        .move-history-item { display: flex; flex-direction: row;}
+        .move-history-item:hover { color: red; display: flex; flex-direction: row; cursor: pointer }
         .state-history-item { cursor: pointer; }
         .state-history-item:hover { color: red; }
     </style>
@@ -141,6 +144,7 @@
 <pre id="output"></pre>
 <h3>State History:</h3>
 <pre id="state-history"></pre>
+
 <script src="{{ url_for('static', filename='3dCube.js') }}"></script>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
