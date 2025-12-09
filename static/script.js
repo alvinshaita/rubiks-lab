@@ -272,12 +272,12 @@ function solve() {
         // solved state
         const solved_state = data.solved_state;
         const solution = data.solution;
-        const states = data.states.split(" ");
-
         if (solution == "") {
             console.log("already solved!")
             return;
         }
+
+        const states = data.states.split(" ");
 
         // update UI
         document.getElementById("stateInput").value = solved_state;
