@@ -41,7 +41,6 @@ for (let face of faceOrder) {
                 // clear history when tiles are manually changed
                 history = [];
                 clearMoveHistoryDisplay();
-                clearMoveHistoryDisplay();
             });
 
             tileLine.appendChild(tile);
@@ -75,11 +74,14 @@ function generateRubiksState(n) {
 }
 
 
-function updateMoveHistoryDisplay() {
+function updateMoveHistoryDisplay(state) {
     const moveHistory = document.getElementById("move-history")
     const moveHistoryItem = document.createElement("div");
     moveHistoryItem.classList.add("move-history-item")
     moveHistoryItem.textContent = history.at(-1)
+    moveHistoryItem.addEventListener("click", () => {
+        _loadState(state)
+    })
     moveHistory.appendChild(moveHistoryItem)
 }
 
@@ -129,15 +131,22 @@ function updateInputFromTiles() {
 
 function loadState() {
     const state = document.getElementById("stateInput").value.trim().toUpperCase();
+    _loadState(state)
+
+    // clear history when a new state is loaded from the input box
+    history = [];
+    clearMoveHistoryDisplay();
+}
+
+
+function _loadState(state) {
     applyCubeState(state);
 
     reset3DCube()
     // initializeCubieColors(state);
     initializeAllCubieColors(state);
 
-    // clear history when a new state is loaded from the input box
-    history = [];
-    clearMoveHistoryDisplay();
+    document.getElementById("stateInput").value = state;
 }
 
 
@@ -229,7 +238,7 @@ function sendMove(move) {
         const newState = data.new_state;
 
         history.push(move); 
-        updateMoveHistoryDisplay();
+        updateMoveHistoryDisplay(newState);
 
         // update UI
         document.getElementById("stateInput").value = newState;
@@ -239,7 +248,7 @@ function sendMove(move) {
             "Applied move: " + move + "\n\n" +
             JSON.stringify(data, null, 2);
 
-            applyMove(move, indexToMove=0)
+        applyMove(move, indexToMove=0)
     })
     .catch(err => alert("Error: " + err));
 }
@@ -263,6 +272,7 @@ function solve() {
         // solved state
         const solved_state = data.solved_state;
         const solution = data.solution;
+        const states = data.states.split(" ");
 
         if (solution == "") {
             console.log("already solved!")
@@ -278,13 +288,18 @@ function solve() {
             JSON.stringify(data, null, 2);
 
         const moves = solution.split(" ")
-        for (const move of moves) {
+        for (const [i, move] of moves.entries()) {
             history.push(move); 
-            updateMoveHistoryDisplay();
+            updateMoveHistoryDisplay(states[i]);
 
             await delay(300);
             applyMove(move, indexToMove=0)
         }
+
+        const moveHistory = document.getElementById("move-history")
+        const moveHistorySeparator = document.createElement("div");
+        moveHistorySeparator.textContent = "/"
+        moveHistory.appendChild(moveHistorySeparator)
     })
     .catch(err => alert("Error: " + err));
 }

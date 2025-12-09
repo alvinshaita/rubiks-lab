@@ -157,10 +157,13 @@ def solve(state):
         try:
             solution = get_solution_3x3(state)
 
+            states= []
+
             c = Cube(3, state)
             moves = solution.split(" ")
             for move in moves:
                 c.rotate(move)
+                states.append(c.state.upper())
 
             solved_state = c.state.upper()
 
@@ -168,7 +171,8 @@ def solve(state):
                 "status": "ok",
                 "solved_state": solved_state,
                 "problem_state": state,
-                "solution": solution
+                "solution": solution,
+                "states": " ".join(states),
             }
 
         except Exception as e:
