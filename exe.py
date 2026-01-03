@@ -30,7 +30,7 @@ def get_solution_3x3(state):
     """
     Get solution from a cube state
     """
-    moves = utils.solve(state, 'Kociemba')
+    moves = utils.solve(state, 'kociemba')
     solution = " ".join([str(move) for move in moves])
 
     return solution
@@ -68,7 +68,7 @@ def get_valid_completions(state):
         candidate = "".join(temp)
 
         try:
-            utils.solve(candidate, 'Kociemba')
+            utils.solve(candidate, 'kociemba')
             # utils.solve(candidate, 'Beginner')
             valid_states.append(candidate)
         except:
@@ -98,7 +98,7 @@ def check_cube_state(state):
     # FULL STATE - direct solve
     if "_" not in state:
         try:
-            moves = utils.solve(state, 'Kociemba')
+            moves = utils.solve(state, 'kociemba')
             solution = " ".join([str(move) for move in moves])
 
             return {"status": "valid", "solution": solution}
